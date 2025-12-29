@@ -1,20 +1,35 @@
 <?php
-$app = new Illuminate\Foundation\Application(
+
+use Illuminate\Foundation\Application;
+use Illuminate\Contracts\Http\Kernel as HttpKernelContract;
+use Illuminate\Contracts\Console\Kernel as ConsoleKernelContract;
+use Illuminate\Contracts\Debug\ExceptionHandler as ExceptionHandlerContract;
+
+$app = new Application(
     $_ENV['APP_BASE_PATH'] ?? dirname(__DIR__)
 );
 
+/*
+|--------------------------------------------------------------------------
+| Bind Important Interfaces
+|--------------------------------------------------------------------------
+|
+| This binds the interfaces into the container so we can resolve them.
+|
+*/
+
 $app->singleton(
-    Illuminate\Contracts\Http\Kernel::class,
+    HttpKernelContract::class,
     App\Http\Kernel::class
 );
 
 $app->singleton(
-    Illuminate\Contracts\Console\Kernel::class,
+    ConsoleKernelContract::class,
     App\Console\Kernel::class
 );
 
 $app->singleton(
-    Illuminate\Contracts\Debug\ExceptionHandler::class,
+    ExceptionHandlerContract::class,
     App\Exceptions\Handler::class
 );
 
