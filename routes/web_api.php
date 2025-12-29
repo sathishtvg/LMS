@@ -2,77 +2,86 @@
 
 use Illuminate\Support\Facades\Route;
 
-// Controllers (admin)
-use App\Http\Controllers\Api\Admin\UsersController;
-use App\Http\Controllers\Api\Admin\CoursesController;
-use App\Http\Controllers\Api\Admin\EnrollmentsController;
-use App\Http\Controllers\Api\Admin\AssessmentsController;
-use App\Http\Controllers\Api\Admin\ReportsController;
-use App\Http\Controllers\Api\Admin\SettingsController;
+use App\Http\Controllers\Api\Admin\UsersAdminController;
+use App\Http\Controllers\Api\Admin\CoursesAdminController;
+use App\Http\Controllers\Api\Admin\EnrollmentsAdminController;
+use App\Http\Controllers\Api\Admin\SettingsAdminController;
 
-// Controllers (learner)
 use App\Http\Controllers\Api\Learner\MyCoursesController;
-use App\Http\Controllers\Api\Learner\CoursePlayerController;
-use App\Http\Controllers\Api\Learner\AssessmentPlayerController;
+use App\Http\Controllers\Api\Learner\PlayerController;
 use App\Http\Controllers\Api\Learner\CertificatesController;
+use App\Http\Controllers\Api\Learner\AssessmentPlayerController;
 
-Route::prefix('api')
-    ->middleware(['web','auth'])
-    ->group(function () {
+use App\Http\Controllers\Api\Web\Admin\CoursesWebApiController;
+/**
+ * IMPORTANT:
+ * - These routes are for Inertia web app JSON calls.
+ * - They use SESSION auth (auth) + tenant middleware.
+ * - Do NOT put auth:sanctum here.
+ * - Prefix is /api
+ */
 
-        Route::get('/me', fn() => auth()->user());
+Route::prefix('api')->middleware(['web','auth','tenant'])->group(function () {
 
-        Route::middleware(['role:admin'])->prefix('admin')->group(function () {
-            // Users
-            Route::get('/users', [UsersController::class, 'index']);
-            Route::post('/users', [UsersController::class, 'store']);
-            Route::put('/users/{user}', [UsersController::class, 'update']);
-            Route::delete('/users/{user}', [UsersController::class, 'destroy']);
+    // Optional: used by UI to confirm session user
+    Route::get('/me', fn() => response()->json([
+        'user' => auth()->user(),
+    ]));
 
-            // Courses / Builder
-            Route::get('/courses', [CoursesController::class, 'index']);
-            Route::post('/courses', [CoursesController::class, 'store']);
-            Route::get('/courses/{course}', [CoursesController::class, 'show']);
-            Route::put('/courses/{course}', [CoursesController::class, 'update']);
-            Route::delete('/courses/{course}', [CoursesController::class, 'destroy']);
-
-            Route::post('/courses/{course}/modules', [CoursesController::class, 'addModule']);
-            Route::post('/modules/{module}/lessons', [CoursesController::class, 'addLesson']);
-            Route::post('/lessons/{lesson}/attach-asset', [CoursesController::class, 'attachAsset']);
-            Route::post('/assets/upload', [CoursesController::class, 'uploadAsset']);
-
-            // Enrollments
-            Route::get('/enrollments', [EnrollmentsController::class, 'index']);
-            Route::post('/enrollments', [EnrollmentsController::class, 'store']);
-            Route::put('/enrollments/{enrollment}', [EnrollmentsController::class, 'update']);
-            Route::delete('/enrollments/{enrollment}', [EnrollmentsController::class, 'destroy']);
-
-            // Assessments
-            Route::get('/assessments', [AssessmentsController::class, 'index']);
-            Route::post('/assessments', [AssessmentsController::class, 'store']);
-            Route::get('/assessments/{assessment}', [AssessmentsController::class, 'show']);
-            Route::put('/assessments/{assessment}', [AssessmentsController::class, 'update']);
-            Route::delete('/assessments/{assessment}', [AssessmentsController::class, 'destroy']);
-
-            // Reports
-            Route::get('/reports/completions', [ReportsController::class, 'completions']);
-            Route::get('/reports/assessments', [ReportsController::class, 'assessments']);
-
-            // Settings
-            Route::get('/settings', [SettingsController::class, 'show']);
-            Route::put('/settings', [SettingsController::class, 'update']);
-            Route::post('/settings/test-email', [SettingsController::class, 'testEmail']);
-        });
-
-        // Learner
-        Route::prefix('learner')->group(function () {
-            Route::get('/my-courses', [MyCoursesController::class, 'index']);
-            Route::get('/course-player/{enrollment}', [CoursePlayerController::class, 'show']);
-            Route::post('/course-player/{enrollment}/progress', [CoursePlayerController::class, 'updateProgress']);
-
-            Route::get('/assessment/{enrollment}', [AssessmentPlayerController::class, 'show']);
-            Route::post('/assessment/{enrollment}/submit', [AssessmentPlayerController::class, 'submit']);
-
-            Route::get('/certificates', [CertificatesController::class, 'index']);
-        });
+    Route::get('/courses', function () {
+        return response()->json(['ok' => true, 'route' => '/api/courses works']);
     });
+
+    // ============ ADMIN ============
+    Route::middleware(['role:admin'])->group(function () {
+
+        // Users CRUD
+        Route::get('/users', [UsersAdminController::class, 'index']);
+        Route::post('/users', [UsersAdminController::class, 'store']);
+        Route::put('/users/{user}', [UsersAdminController::class, 'update']);
+        Route::delete('/users/{user}', [UsersAdminController::class, 'destroy']);
+
+        // Courses CRUD + builder endpoints
+        Route::get('/courses', [CoursesAdminController::class, 'index']);          // <-- fixes api/courses
+        Route::post('/courses', [CoursesAdminController::class, 'store']);
+        Route::get('/courses/{course}', [CoursesAdminController::class, 'show']);
+        Route::put('/courses/{course}', [CoursesAdminController::class, 'update']);
+        Route::delete('/courses/{course}', [CoursesAdminController::class, 'destroy']);
+
+        Route::post('/courses/{course}/modules', [CoursesAdminController::class, 'createModule']);
+        Route::post('/courses/{course}/lessons', [CoursesAdminController::class, 'createLesson']);
+        Route::post('/courses/{course}/reorder', [CoursesAdminController::class, 'reorder']);
+
+        // Upload / attach asset to lesson
+        Route::post('/assets/upload', [CoursesAdminController::class, 'upload']);
+        Route::post('/lessons/{lesson}/attach', [CoursesAdminController::class, 'attachAsset']);
+
+        // Enrollments
+        Route::get('/admin/enrollments', [EnrollmentsAdminController::class, 'index']);
+        Route::post('/admin/enrollments', [EnrollmentsAdminController::class, 'store']);
+        Route::put('/admin/enrollments/{enrollment}', [EnrollmentsAdminController::class, 'update']);
+        Route::delete('/admin/enrollments/{enrollment}', [EnrollmentsAdminController::class, 'destroy']);
+
+        // Settings (upload rules etc.)
+        Route::get('/admin/settings', [SettingsAdminController::class, 'show']);
+        Route::put('/admin/settings', [SettingsAdminController::class, 'update']);
+    });
+
+    // ============ LEARNER ============
+    Route::middleware(['role:learner'])->group(function () {
+
+        // "My Courses"
+        Route::get('/learner/my-courses', [MyCoursesController::class, 'index']);
+
+        // Course player + progress
+        Route::get('/learner/player/{enrollment}', [PlayerController::class, 'player']);
+        Route::post('/learner/player/{enrollment}/progress', [PlayerController::class, 'progress']);
+
+        // Certificates
+        Route::get('/learner/certificates', [CertificatesController::class, 'index']);
+
+        // Assessments
+        Route::get('/learner/assessments/{assessment}', [AssessmentPlayerController::class, 'show']);
+        Route::post('/learner/assessments/{assessment}/submit', [AssessmentPlayerController::class, 'submit']);
+    });
+});
