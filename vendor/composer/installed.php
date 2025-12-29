@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'lms/safety-induction',
-        'pretty_version' => '1.0.0+no-version-set',
-        'version' => '1.0.0.0',
-        'reference' => null,
+        'pretty_version' => 'dev-develop',
+        'version' => 'dev-develop',
+        'reference' => '38787a87f6e35675f6ee5ea3942f4775a015d985',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -452,9 +452,9 @@
             'dev_requirement' => false,
         ),
         'lms/safety-induction' => array(
-            'pretty_version' => '1.0.0+no-version-set',
-            'version' => '1.0.0.0',
-            'reference' => null,
+            'pretty_version' => 'dev-develop',
+            'version' => 'dev-develop',
+            'reference' => '38787a87f6e35675f6ee5ea3942f4775a015d985',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

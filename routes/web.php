@@ -18,7 +18,9 @@ Route::post('/logout', [AuthWebController::class, 'logout'])
 
 Route::get('/__webphp_loaded', fn() => 'OK web.php loaded');    
 
-Route::middleware(['auth','tenant'])->group(function () {
+// Tenant resolution is applied by the global "web" middleware group (Http\Kernel).
+// Do not re-apply it here to avoid duplicate execution and session edge cases.
+Route::middleware(['auth'])->group(function () {
 
     Route::get('/app', fn () => inertia('AppShell'))->name('app');
 
