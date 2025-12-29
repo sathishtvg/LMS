@@ -99,7 +99,7 @@ The mobile app sends `X-Tenant-Code` automatically (`DEFAULT_TENANT_CODE=acme` i
 1. Copy `.env.example` to `.env` and set:
    - `APP_URL=http://acme.lms.test:8000`
    - `SESSION_DRIVER=file`
-   - `SESSION_DOMAIN=` (leave empty for local)
+   - `SESSION_DOMAIN=.lms.test` (required when using subdomains like `acme.lms.test` so the session cookie is shared)
    - `SANCTUM_STATEFUL_DOMAINS=acme.lms.test,lms.test,localhost,127.0.0.1`
 2. Hosts file:
    - `127.0.0.1 lms.test`
