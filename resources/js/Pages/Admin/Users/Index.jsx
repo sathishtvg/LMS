@@ -47,7 +47,7 @@ export default function UsersIndex() {
     setMsg('');
     setLoading(true);
     try {
-      const data = await apiGet('/api/users');
+      const data = await apiGet('/api/admin/users');
       setRows(data?.data || []);
     } catch (e) {
       setErr(e.message);
@@ -77,7 +77,7 @@ export default function UsersIndex() {
   async function openEnroll() {
     setErr(''); setMsg('');
     try {
-      const cs = await apiGet('/api/courses');
+      const cs = await apiGet('/api/admin/courses');
       setCourses(cs || []);
       setEnrollCourseId(cs?.[0]?.id ? String(cs[0].id) : '');
       setEnrollOpen(true);
@@ -91,7 +91,7 @@ export default function UsersIndex() {
     try {
       if (!enrollCourseId) throw new Error('Select a course');
       if (!selectedIds.length) throw new Error('Select at least one learner');
-      await apiPost(`/api/courses/${enrollCourseId}/enrollments`, {
+      await apiPost(`/api/admin/courses/${enrollCourseId}/enrollments`, {
         user_ids: selectedIds,
         due_date: enrollDueDate || null,
       });
@@ -134,10 +134,10 @@ export default function UsersIndex() {
       if (!payload.email && !payload.phone) throw new Error('Email or phone is required');
 
       if (editing) {
-        await apiPut(`/api/users/${editing.id}`, payload);
+        await apiPut(`/api/admin/users/${editing.id}`, payload);
         setMsg('User updated.');
       } else {
-        await apiPost('/api/users', payload);
+        await apiPost('/api/admin/users', payload);
         setMsg('User created.');
       }
       setOpen(false);
@@ -152,7 +152,7 @@ export default function UsersIndex() {
     setErr('');
     setMsg('');
     try {
-      const res = await apiPost(`/api/users/${u.id}/reset-password`, { password: 'Password123!' });
+      const res = await apiPost(`/api/admin/users/${u.id}/reset-password`, { password: 'Password123!' });
       setMsg(res?.message || 'Password reset to Password123!');
     } catch (e) {
       setErr(e.message);

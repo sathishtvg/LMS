@@ -32,7 +32,7 @@ export default function CoursePlayer({ enrollmentId }) {
       if (!e) return null;
       setEnrollment(e);
       try {
-        const as = await apiGet(`/api/courses/${e.course?.id}/assessments`);
+        const as = await apiGet(`/api/admin/courses/${e.course?.id}/assessments`);
         setAssessments(as || []);
       } catch (_) { /* ignore */ }
 

@@ -31,7 +31,7 @@ export default function CourseBuilder({ courseId }) {
     setErr('');
     setLoading(true);
     try {
-      const data = await apiGet(`/api/courses/${courseId}/full`);
+      const data = await apiGet(`/api/admin/courses/${courseId}/full`);
       setCourse(data.course);
     } catch (e) {
       setErr(e.message);
@@ -45,7 +45,7 @@ export default function CourseBuilder({ courseId }) {
   async function addModule() {
     if (!course) return;
     const sort = (course.modules?.length || 0) + 1;
-    await apiPost(`/api/courses/${course.id}/modules`, { sort_order: sort, title: newModuleTitle || `Module ${sort}` });
+    await apiPost(`/api/admin/courses/${course.id}/modules`, { sort_order: sort, title: newModuleTitle || `Module ${sort}` });
     setNewModuleTitle('');
     await load();
   }
@@ -72,7 +72,7 @@ export default function CourseBuilder({ courseId }) {
     const j = idx + dir;
     if (idx < 0 || j < 0 || j >= ids.length) return;
     [ids[idx], ids[j]] = [ids[j], ids[idx]];
-    await apiPost(`/api/courses/${course.id}/reorder-modules`, { ordered_ids: ids });
+    await apiPost(`/api/admin/courses/${course.id}/reorder-modules`, { ordered_ids: ids });
     await load();
   }
 
@@ -84,7 +84,7 @@ export default function CourseBuilder({ courseId }) {
     const to = ids.indexOf(toModuleId);
     if (from < 0 || to < 0) return;
     ids.splice(to, 0, ...ids.splice(from, 1));
-    await apiPost(`/api/courses/${course.id}/reorder-modules`, { ordered_ids: ids });
+    await apiPost(`/api/admin/courses/${course.id}/reorder-modules`, { ordered_ids: ids });
     await load();
   }
 

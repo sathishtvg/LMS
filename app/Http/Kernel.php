@@ -6,6 +6,9 @@ use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
 {
+    /**
+     * Global HTTP middleware stack.
+     */
     protected $middleware = [
         \App\Http\Middleware\TrustProxies::class,
         \Illuminate\Http\Middleware\HandleCors::class,
@@ -15,6 +18,9 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
     ];
 
+    /**
+     * Route middleware groups.
+     */
     protected $middlewareGroups = [
         'web' => [
             \App\Http\Middleware\EncryptCookies::class,
@@ -23,28 +29,25 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
-
-            // Tenant must run AFTER session starts
-            \App\Http\Middleware\ResolveTenant::class,
         ],
 
         'api' => [
-            // Keep API throttled for mobile/token routes only
-            'throttle:api',
+            // IMPORTANT: API is session + sanctum aware
+            \Illuminate\Session\Middleware\StartSession::class,
+            \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
-
-            // Tenant can still apply for api if you want
-            \App\Http\Middleware\ResolveTenant::class,
         ],
     ];
 
+    /**
+     * Individual route middleware aliases.
+     */
     protected $routeMiddleware = [
-        'auth' => \App\Http\Middleware\Authenticate::class,
-        'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
+        'auth'     => \App\Http\Middleware\Authenticate::class,
+        'guest'   => \App\Http\Middleware\RedirectIfAuthenticated::class,
+        'role'    => \App\Http\Middleware\RoleMiddleware::class,
 
-        // IMPORTANT: fixes "Target class [role] does not exist"
-        'role' => \App\Http\Middleware\RoleMiddleware::class,
-        // Tenant resolution (subdomain / X-Tenant-Code / session)
-        'tenant' => \App\Http\Middleware\ResolveTenant::class,
+        // ✅ THIS IS THE FIX FOR YOUR ERROR
+        'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
     ];
 }

@@ -2,7 +2,7 @@
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\{Course,Module,Lesson,Asset,Enrollment,User};
+use App\Models\{Course, Module, Lesson, Asset, Enrollment, User};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Services\EmailNotifications;
@@ -38,14 +38,14 @@ class CoursesController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'code'=>'required|string|max:50|unique:courses,code',
-            'status'=>'required|in:draft,published,archived',
-            'default_language'=>'required|in:en,ms,ta,zh',
-            'available_languages_json'=>'required|array',
-            'completion_rules_json'=>'required|array',
-            'certificate_enabled'=>'required|boolean',
-            'certificate_validity_json'=>'nullable|array',
-            'template_id'=>'nullable|integer'
+            'code' => 'required|string|max:50|unique:courses,code',
+            'status' => 'required|in:draft,published,archived',
+            'default_language' => 'required|in:en,ms,ta,zh',
+            'available_languages_json' => 'required|array',
+            'completion_rules_json' => 'required|array',
+            'certificate_enabled' => 'required|boolean',
+            'certificate_validity_json' => 'nullable|array',
+            'template_id' => 'nullable|integer'
         ]);
         $data['created_by'] = $request->user()->id;
         $course = Course::create($data);
@@ -54,37 +54,37 @@ class CoursesController extends Controller
         if ($request->has('title')) {
             $course->translations()->create([
                 'lang' => $data['default_language'],
-                'title' => (string)$request->input('title'),
-                'description' => (string)($request->input('description') ?? ''),
+                'title' => (string) $request->input('title'),
+                'description' => (string) ($request->input('description') ?? ''),
             ]);
         }
-        return response()->json(['course'=>$course], 201);
+        return response()->json(['course' => $course], 201);
     }
 
     public function update(Request $request, int $id)
     {
         $course = Course::findOrFail($id);
         $data = $request->validate([
-            'status'=>'sometimes|required|in:draft,published,archived',
-            'default_language'=>'sometimes|required|in:en,ms,ta,zh',
-            'available_languages_json'=>'sometimes|required|array',
-            'completion_rules_json'=>'sometimes|required|array',
-            'certificate_enabled'=>'sometimes|required|boolean',
-            'certificate_validity_json'=>'nullable|array',
-            'template_id'=>'nullable|integer'
+            'status' => 'sometimes|required|in:draft,published,archived',
+            'default_language' => 'sometimes|required|in:en,ms,ta,zh',
+            'available_languages_json' => 'sometimes|required|array',
+            'completion_rules_json' => 'sometimes|required|array',
+            'certificate_enabled' => 'sometimes|required|boolean',
+            'certificate_validity_json' => 'nullable|array',
+            'template_id' => 'nullable|integer'
         ]);
         $course->fill($data)->save();
-        return response()->json(['course'=>$course]);
+        return response()->json(['course' => $course]);
     }
 
     public function addModule(Request $request, int $id)
     {
         $course = Course::findOrFail($id);
         $data = $request->validate([
-            'sort_order'=>'required|integer|min:1',
-            'title'=>'nullable|string|max:255'
+            'sort_order' => 'required|integer|min:1',
+            'title' => 'nullable|string|max:255'
         ]);
-        $module = Module::create(['course_id'=>$course->id,'sort_order'=>$data['sort_order']]);
+        $module = Module::create(['course_id' => $course->id, 'sort_order' => $data['sort_order']]);
 
         if (!empty($data['title'])) {
             $module->translations()->create([
@@ -92,7 +92,7 @@ class CoursesController extends Controller
                 'title' => $data['title'],
             ]);
         }
-        return response()->json(['module'=>$module], 201);
+        return response()->json(['module' => $module], 201);
     }
 
     public function addLesson(Request $request, Module $module)
@@ -176,48 +176,68 @@ class CoursesController extends Controller
     {
         $lesson = Lesson::findOrFail($id);
         $data = $request->validate([
-          'asset_type'=>'required|in:video,pdf,ppt,image,other',
-          'path_or_url'=>'required|string',
-          'is_external'=>'required|boolean',
-          'meta_json'=>'nullable|array'
+            'asset_type' => 'required|in:video,pdf,ppt,image,other',
+            'path_or_url' => 'required|string',
+            'is_external' => 'required|boolean',
+            'meta_json' => 'nullable|array'
         ]);
         $asset = Asset::create([
-          'lesson_id'=>$lesson->id,
-          'asset_type'=>$data['asset_type'],
-          'storage_driver'=>config('filesystems.default'),
-          'path_or_url'=>$data['path_or_url'],
-          'is_external'=>$data['is_external'],
-          'meta_json'=>$data['meta_json'] ?? []
+            'lesson_id' => $lesson->id,
+            'asset_type' => $data['asset_type'],
+            'storage_driver' => config('filesystems.default'),
+            'path_or_url' => $data['path_or_url'],
+            'is_external' => $data['is_external'],
+            'meta_json' => $data['meta_json'] ?? []
         ]);
-        return response()->json(['asset'=>$asset], 201);
+        return response()->json(['asset' => $asset], 201);
     }
 
     public function assignLearners(Request $request, int $id)
     {
         $course = Course::findOrFail($id);
         $data = $request->validate([
-          'user_ids'=>'required|array|min:1',
-          'user_ids.*'=>'integer|exists:users,id',
-          'due_date'=>'nullable|date'
+            'user_ids' => 'required|array|min:1',
+            'user_ids.*' => 'integer|exists:users,id',
+            'due_date' => 'nullable|date'
         ]);
 
         $assigned = [];
         foreach ($data['user_ids'] as $uid) {
-          $en = Enrollment::firstOrCreate(
-            ['course_id'=>$course->id,'user_id'=>$uid],
-            [
-              'status'=>'assigned',
-              'assigned_by'=>$request->user()->id,
-              'assigned_at'=>now(),
-              'due_date'=>$data['due_date'] ?? null
-            ]
-          );
-          $assigned[] = $en;
-if ($en->wasRecentlyCreated) {
-  // notify learner (if enabled)
-  app(EmailNotifications::class)->sendEnrollmentAssigned($en->loadMissing(['user','course.translations']));
-}
+            $en = Enrollment::firstOrCreate(
+                ['course_id' => $course->id, 'user_id' => $uid],
+                [
+                    'status' => 'assigned',
+                    'assigned_by' => $request->user()->id,
+                    'assigned_at' => now(),
+                    'due_date' => $data['due_date'] ?? null
+                ]
+            );
+            $assigned[] = $en;
+            if ($en->wasRecentlyCreated) {
+                // notify learner (if enabled)
+                app(EmailNotifications::class)->sendEnrollmentAssigned($en->loadMissing(['user', 'course.translations']));
+            }
         }
-        return response()->json(['enrollments'=>$assigned]);
+        return response()->json(['enrollments' => $assigned]);
+    }
+
+    public function full(\Illuminate\Http\Request $request, \App\Models\Course $course)
+    {
+        // OPTIONAL tenant isolation (enable if your courses have tenant_id)
+        // $tenant = app('tenant', null);
+        // if ($tenant && (int)$course->tenant_id !== (int)$tenant->id) abort(404);
+
+        // Load builder graph (adjust relation names if yours differ)
+        $course->load([
+            'translations',
+            'modules.translations',
+            'modules.lessons.translations',
+            'modules.lessons.assets',
+            'assessments.questionBanks.questions.options',
+        ]);
+
+        return response()->json([
+            'course' => $course,
+        ]);
     }
 }

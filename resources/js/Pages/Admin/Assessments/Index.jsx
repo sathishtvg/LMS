@@ -35,7 +35,7 @@ export default function Index() {
   async function load() {
     setErr("");
     try {
-      const cs = await apiFetch("/api/courses");
+      const cs = await apiFetch("/api/admin/courses");
       setCourses(cs || []);
       const cid = courseId || (cs?.[0]?.id ? String(cs[0].id) : "");
       if (!courseId && cid) setCourseId(cid);
