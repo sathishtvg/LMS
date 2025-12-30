@@ -2110,3 +2110,27 @@
 #20 C:\\Users\\Admin\\Desktop\\Sathish\\Projects\\LMS\\lms-backend\\artisan(10): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
 #21 {main}
 "} 
+[2025-12-30 17:00:07] local.ERROR: Class "DOMDocument" not found {"exception":"[object] (Error(code: 0): Class \"DOMDocument\" not found at /mnt/data/lms_backend/lms-backend/vendor/nunomaduro/termwind/src/HtmlRenderer.php:32)
+[stacktrace]
+#0 /mnt/data/lms_backend/lms-backend/vendor/nunomaduro/termwind/src/HtmlRenderer.php(24): Termwind\\HtmlRenderer->parse()
+#1 /mnt/data/lms_backend/lms-backend/vendor/nunomaduro/termwind/src/Functions.php(41): Termwind\\HtmlRenderer->render()
+#2 /mnt/data/lms_backend/lms-backend/vendor/laravel/framework/src/Illuminate/Console/View/Components/Component.php(52): Termwind\\render()
+#3 /mnt/data/lms_backend/lms-backend/vendor/laravel/framework/src/Illuminate/Console/View/Components/Line.php(49): Illuminate\\Console\\View\\Components\\Component->renderView()
+#4 /mnt/data/lms_backend/lms-backend/vendor/laravel/framework/src/Illuminate/Console/View/Components/Info.php(18): Illuminate\\Console\\View\\Components\\Line->render()
+#5 /mnt/data/lms_backend/lms-backend/vendor/laravel/framework/src/Illuminate/Console/View/Components/Factory.php(58): Illuminate\\Console\\View\\Components\\Info->render()
+#6 /mnt/data/lms_backend/lms-backend/vendor/laravel/framework/src/Illuminate/Foundation/Console/RouteClearCommand.php(55): Illuminate\\Console\\View\\Components\\Factory->__call()
+#7 /mnt/data/lms_backend/lms-backend/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): Illuminate\\Foundation\\Console\\RouteClearCommand->handle()
+#8 /mnt/data/lms_backend/lms-backend/vendor/laravel/framework/src/Illuminate/Container/Util.php(41): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#9 /mnt/data/lms_backend/lms-backend/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(93): Illuminate\\Container\\Util::unwrapIfClosure()
+#10 /mnt/data/lms_backend/lms-backend/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#11 /mnt/data/lms_backend/lms-backend/vendor/laravel/framework/src/Illuminate/Container/Container.php(662): Illuminate\\Container\\BoundMethod::call()
+#12 /mnt/data/lms_backend/lms-backend/vendor/laravel/framework/src/Illuminate/Console/Command.php(211): Illuminate\\Container\\Container->call()
+#13 /mnt/data/lms_backend/lms-backend/vendor/symfony/console/Command/Command.php(326): Illuminate\\Console\\Command->execute()
+#14 /mnt/data/lms_backend/lms-backend/vendor/laravel/framework/src/Illuminate/Console/Command.php(180): Symfony\\Component\\Console\\Command\\Command->run()
+#15 /mnt/data/lms_backend/lms-backend/vendor/symfony/console/Application.php(1106): Illuminate\\Console\\Command->run()
+#16 /mnt/data/lms_backend/lms-backend/vendor/symfony/console/Application.php(324): Symfony\\Component\\Console\\Application->doRunCommand()
+#17 /mnt/data/lms_backend/lms-backend/vendor/symfony/console/Application.php(175): Symfony\\Component\\Console\\Application->doRun()
+#18 /mnt/data/lms_backend/lms-backend/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(201): Symfony\\Component\\Console\\Application->run()
+#19 /mnt/data/lms_backend/lms-backend/artisan(8): Illuminate\\Foundation\\Console\\Kernel->handle()
+#20 {main}
+"} 

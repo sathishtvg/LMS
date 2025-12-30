@@ -70,7 +70,8 @@ class CourseBuilderController extends Controller
     {
         $data = $request->validate([
             'title' => 'required|string|max:255',
-            'type' => 'required|in:video,pdf,quiz,scorm,link',
+            // Keep backend permissive to match the Inertia builder UI.
+            'type' => 'required|in:video,pdf,ppt,quiz,scorm,link,other',
             'required' => 'nullable|boolean',
             'min_watch_percent' => 'nullable|integer|min:0|max:100',
             'must_view_all_slides' => 'nullable|boolean',

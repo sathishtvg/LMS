@@ -27,6 +27,32 @@ export default function CourseBuilder({ courseId }) {
   const [dragModuleId, setDragModuleId] = useState(null);
   const [dragLesson, setDragLesson] = useState(null); // { moduleId, lessonId }
 
+  function buildReorderPayload(nextModuleOrderIds, nextLessonOrderByModule = {}) {
+    // Backend expects: { modules: [{id, lessons:[{id}]}] }
+    const currentModules = (course?.modules || []).slice();
+    const byId = new Map(currentModules.map(m => [m.id, m]));
+
+    const moduleIds = nextModuleOrderIds || currentModules
+      .slice()
+      .sort((a,b)=>a.sort_order-b.sort_order)
+      .map(m=>m.id);
+
+    return {
+      modules: moduleIds.map((mid) => {
+        const mod = byId.get(mid);
+        const currentLessonIds = (mod?.lessons || [])
+          .slice()
+          .sort((a,b)=>a.sort_order-b.sort_order)
+          .map(l=>l.id);
+        const lessonIds = nextLessonOrderByModule[mid] || currentLessonIds;
+        return {
+          id: mid,
+          lessons: (lessonIds || []).map(id => ({ id }))
+        };
+      })
+    };
+  }
+
   async function load() {
     setErr('');
     setLoading(true);
@@ -45,7 +71,10 @@ export default function CourseBuilder({ courseId }) {
   async function addModule() {
     if (!course) return;
     const sort = (course.modules?.length || 0) + 1;
-    await apiPost(`/api/admin/courses/${course.id}/modules`, { sort_order: sort, title: newModuleTitle || `Module ${sort}` });
+    await apiPost(`/api/admin/courses/${course.id}/modules`, {
+      title: newModuleTitle || `Module ${sort}`,
+      lang: course.default_language || 'en',
+    });
     setNewModuleTitle('');
     await load();
   }
@@ -54,13 +83,13 @@ export default function CourseBuilder({ courseId }) {
     if (!lessonDraft.moduleId) return;
     const mod = course.modules.find(m => m.id === lessonDraft.moduleId);
     const sort = (mod.lessons?.length || 0) + 1;
-    await apiPost(`/api/modules/${lessonDraft.moduleId}/lessons`, {
+    await apiPost(`/api/admin/modules/${lessonDraft.moduleId}/lessons`, {
       type: lessonDraft.type,
-      sort_order: sort,
       required: !!lessonDraft.required,
       min_watch_percent: lessonDraft.type === 'video' ? Number(lessonDraft.min_watch_percent || 90) : null,
       must_view_all_slides: (lessonDraft.type === 'pdf' || lessonDraft.type === 'ppt') ? !!lessonDraft.must_view_all_slides : true,
       title: lessonDraft.title || `Lesson ${sort}`,
+      lang: course.default_language || 'en',
     });
     setLessonDraft({ ...lessonDraft, title: '' });
     await load();
@@ -72,7 +101,7 @@ export default function CourseBuilder({ courseId }) {
     const j = idx + dir;
     if (idx < 0 || j < 0 || j >= ids.length) return;
     [ids[idx], ids[j]] = [ids[j], ids[idx]];
-    await apiPost(`/api/admin/courses/${course.id}/reorder-modules`, { ordered_ids: ids });
+    await apiPost(`/api/admin/courses/${course.id}/reorder`, buildReorderPayload(ids));
     await load();
   }
 
@@ -84,7 +113,7 @@ export default function CourseBuilder({ courseId }) {
     const to = ids.indexOf(toModuleId);
     if (from < 0 || to < 0) return;
     ids.splice(to, 0, ...ids.splice(from, 1));
-    await apiPost(`/api/admin/courses/${course.id}/reorder-modules`, { ordered_ids: ids });
+    await apiPost(`/api/admin/courses/${course.id}/reorder`, buildReorderPayload(ids));
     await load();
   }
 
@@ -98,7 +127,7 @@ export default function CourseBuilder({ courseId }) {
     const to = ids.indexOf(toLessonId);
     if (from < 0 || to < 0) return;
     ids.splice(to, 0, ...ids.splice(from, 1));
-    await apiPost(`/api/modules/${moduleId}/reorder-lessons`, { ordered_ids: ids });
+    await apiPost(`/api/admin/courses/${course.id}/reorder`, buildReorderPayload(null, { [moduleId]: ids }));
     await load();
   }
 
@@ -109,7 +138,7 @@ export default function CourseBuilder({ courseId }) {
     const j = idx + dir;
     if (idx < 0 || j < 0 || j >= ids.length) return;
     [ids[idx], ids[j]] = [ids[j], ids[idx]];
-    await apiPost(`/api/modules/${moduleId}/reorder-lessons`, { ordered_ids: ids });
+    await apiPost(`/api/admin/courses/${course.id}/reorder`, buildReorderPayload(null, { [moduleId]: ids }));
     await load();
   }
 
@@ -117,7 +146,7 @@ export default function CourseBuilder({ courseId }) {
     const fd = new FormData();
     fd.append('asset_type', assetType);
     fd.append('file', file);
-    await apiUpload(`/api/lessons/${lessonId}/assets/upload`, fd);
+    await apiUpload(`/api/admin/lessons/${lessonId}/assets/upload`, fd);
     await load();
   }
 

@@ -18,6 +18,12 @@ class CoursesController extends Controller
         );
     }
 
+    public function show(\App\Models\Course $course)
+    {
+        $course->load(['translations']);
+        return response()->json(['course' => $course]);
+    }
+
     public function showFull(int $id)
     {
         $course = Course::with([
@@ -75,6 +81,14 @@ class CoursesController extends Controller
         ]);
         $course->fill($data)->save();
         return response()->json(['course' => $course]);
+    }
+
+    public function destroy(\App\Models\Course $course)
+    {
+        // If your DB has cascading foreign keys, this will clean up related
+        // modules/lessons/assets/translations automatically.
+        $course->delete();
+        return response()->json(['message' => 'Course deleted']);
     }
 
     public function addModule(Request $request, int $id)
