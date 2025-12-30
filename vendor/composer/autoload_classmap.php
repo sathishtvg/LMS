@@ -15,6 +15,7 @@ return array(
     'App\\Http\\Controllers\\Api\\Admin\\AssetUploadController' => $baseDir . '/app/Http/Controllers/Api/Admin/AssetUploadController.php',
     'App\\Http\\Controllers\\Api\\Admin\\BrandingController' => $baseDir . '/app/Http/Controllers/Api/Admin/BrandingController.php',
     'App\\Http\\Controllers\\Api\\Admin\\CertificatesController' => $baseDir . '/app/Http/Controllers/Api/Admin/CertificatesController.php',
+    'App\\Http\\Controllers\\Api\\Admin\\CourseBuilderController' => $baseDir . '/app/Http/Controllers/Api/Admin/CourseBuilderController.php',
     'App\\Http\\Controllers\\Api\\Admin\\CoursesController' => $baseDir . '/app/Http/Controllers/Api/Admin/CoursesController.php',
     'App\\Http\\Controllers\\Api\\Admin\\EmailController' => $baseDir . '/app/Http/Controllers/Api/Admin/EmailController.php',
     'App\\Http\\Controllers\\Api\\Admin\\EnrollmentsController' => $baseDir . '/app/Http/Controllers/Api/Admin/EnrollmentsController.php',

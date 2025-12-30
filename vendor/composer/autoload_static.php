@@ -526,6 +526,7 @@ class ComposerStaticInitc96c4bd178e34c822bccce2ca833e8e7
         'App\\Http\\Controllers\\Api\\Admin\\AssetUploadController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/Admin/AssetUploadController.php',
         'App\\Http\\Controllers\\Api\\Admin\\BrandingController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/Admin/BrandingController.php',
         'App\\Http\\Controllers\\Api\\Admin\\CertificatesController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/Admin/CertificatesController.php',
+        'App\\Http\\Controllers\\Api\\Admin\\CourseBuilderController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/Admin/CourseBuilderController.php',
         'App\\Http\\Controllers\\Api\\Admin\\CoursesController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/Admin/CoursesController.php',
         'App\\Http\\Controllers\\Api\\Admin\\EmailController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/Admin/EmailController.php',
         'App\\Http\\Controllers\\Api\\Admin\\EnrollmentsController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/Admin/EnrollmentsController.php',

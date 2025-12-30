@@ -25,6 +25,16 @@ class Assessment extends Model
   ];
 
   public function course(){ return $this->belongsTo(Course::class); }
-  public function banks(){ return $this->hasMany(QuestionBank::class); }
+ // public function banks(){ return $this->hasMany(QuestionBank::class); }
+  public function banks()
+{
+    return $this->hasMany(\App\Models\QuestionBank::class, 'assessment_id');
+}
+
+public function questionBanks()
+{
+    return $this->hasMany(\App\Models\QuestionBank::class, 'assessment_id');
+}
+
   public function attempts(){ return $this->hasMany(Attempt::class); }
 }

@@ -45,7 +45,7 @@ export default function CoursesIndex() {
     setErr('');
     setLoading(true);
     try {
-      const data = await apiGet('/api/courses');
+      const data = await apiGet('/api/admin/courses');
       setRows(data?.data || []);
       setMeta({
         current_page: data?.current_page,
@@ -82,7 +82,7 @@ export default function CoursesIndex() {
         certificate_validity_json: { type: 'days', value: 365 },
         template_id: 1,
       };
-      const res = await apiPost('/api/courses', payload);
+      const res = await apiPost('/api/admin/courses', payload);
       await load();
       if (res?.course?.id) {
         window.location.href = `/admin/courses/${res.course.id}/builder`;
@@ -98,7 +98,7 @@ export default function CoursesIndex() {
     const q = new URLSearchParams();
     q.set('role', 'learner');
     if (search) q.set('search', search);
-    const data = await apiGet(`/api/users?${q.toString()}`);
+    const data = await apiGet(`/api/admin/users?${q.toString()}`);
     setLearnerRows(data?.data || []);
   }
 
@@ -121,7 +121,7 @@ export default function CoursesIndex() {
     setErr('');
     setEnrolling(true);
     try {
-      await apiPost(`/api/courses/${enrollCourse.id}/enrollments`, {
+      await apiPost(`/api/admin/courses/${enrollCourse.id}/enrollments`, {
         user_ids: userIds,
         due_date: dueDate || null,
       });
