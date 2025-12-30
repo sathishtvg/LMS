@@ -4,10 +4,18 @@ namespace App\Http;
 
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
+/**
+ * Laravel 10.x HTTP Kernel.
+ *
+ * Key rules for this LMS:
+ * - `web` group: session + CSRF + Inertia, plus tenant resolution.
+ * - `api` group: stateless JSON (Sanctum token routes in routes/api.php).
+ *   Do NOT start session / CSRF here.
+ */
 class Kernel extends HttpKernel
 {
     /**
-     * Global HTTP middleware stack.
+     * The application's global HTTP middleware stack.
      */
     protected $middleware = [
         \App\Http\Middleware\TrustProxies::class,
@@ -19,35 +27,47 @@ class Kernel extends HttpKernel
     ];
 
     /**
-     * Route middleware groups.
+     * The application's route middleware groups.
      */
     protected $middlewareGroups = [
         'web' => [
+            // Multi-tenant resolver (supports subdomain + header + session fallback)
+            \App\Http\Middleware\ResolveTenant::class,
+
             \App\Http\Middleware\EncryptCookies::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
+            // \Illuminate\Session\Middleware\AuthenticateSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
 
         'api' => [
-            // IMPORTANT: API is session + sanctum aware
-            \Illuminate\Session\Middleware\StartSession::class,
-            \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
+            // Tenant resolution for token/mobile APIs (uses header/input, no session required)
+            \App\Http\Middleware\ResolveTenant::class,
+
+            // Throttling is applied via route middleware (throttle:api)
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
     ];
 
     /**
-     * Individual route middleware aliases.
+     * The application's route middleware aliases.
      */
-    protected $routeMiddleware = [
-        'auth'     => \App\Http\Middleware\Authenticate::class,
-        'guest'   => \App\Http\Middleware\RedirectIfAuthenticated::class,
-        'role'    => \App\Http\Middleware\RoleMiddleware::class,
-
-        // ✅ THIS IS THE FIX FOR YOUR ERROR
+    protected $middlewareAliases = [
+        'auth' => \App\Http\Middleware\Authenticate::class,
+        'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
+        'auth.session' => \Illuminate\Session\Middleware\AuthenticateSession::class,
+        'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
+        'can' => \Illuminate\Auth\Middleware\Authorize::class,
+        'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
+        'password.confirm' => \Illuminate\Auth\Middleware\RequirePassword::class,
+        'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+
+        // App-specific
+        'role' => \App\Http\Middleware\RoleMiddleware::class,
     ];
 }

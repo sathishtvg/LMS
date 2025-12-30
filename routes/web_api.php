@@ -38,6 +38,9 @@ Route::middleware(['web', 'auth'])->group(function () {
             Route::apiResource('courses', CoursesController::class);
             Route::get('courses/{course}/full', [CoursesController::class, 'full']);
 
+            // Bulk enroll learners to a course (used by Admin Users + Courses pages)
+            Route::post('courses/{course}/enrollments', [CoursesController::class, 'assignLearners']);
+
             // ---- COURSE BUILDER ----
             Route::post('courses/{course}/modules', [CourseBuilderController::class, 'createModule']);
             Route::put('modules/{module}', [CourseBuilderController::class, 'updateModule']);
@@ -55,6 +58,9 @@ Route::middleware(['web', 'auth'])->group(function () {
 
             // ---- USERS ----
             Route::apiResource('users', UsersController::class)->only(['index', 'store', 'update', 'destroy']);
+
+            // Reset password (used by Admin Users page)
+            Route::post('users/{user}/reset-password', [UsersController::class, 'resetPassword']);
 
             // ---- ENROLLMENTS ----
             Route::apiResource('enrollments', EnrollmentsController::class)->only(['index', 'store', 'update', 'destroy']);

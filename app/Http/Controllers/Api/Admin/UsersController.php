@@ -72,4 +72,20 @@ class UsersController extends Controller
         $u->forceFill(['password'=>Hash::make($data['password'])])->save();
         return response()->json(['message'=>'Password reset']);
     }
+
+    public function destroy(int $id)
+    {
+        $u = User::findOrFail($id);
+
+        // Prevent accidental removal of the last admin
+        if ($u->role === 'admin') {
+            $adminCount = User::where('role', 'admin')->count();
+            if ($adminCount <= 1) {
+                return response()->json(['message' => 'Cannot delete the last admin user.'], 422);
+            }
+        }
+
+        $u->delete();
+        return response()->json(['message' => 'User deleted']);
+    }
 }

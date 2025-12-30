@@ -78,8 +78,9 @@ export default function UsersIndex() {
     setErr(''); setMsg('');
     try {
       const cs = await apiGet('/api/admin/courses');
-      setCourses(cs || []);
-      setEnrollCourseId(cs?.[0]?.id ? String(cs[0].id) : '');
+      const list = cs?.data || cs || [];
+      setCourses(list);
+      setEnrollCourseId(list?.[0]?.id ? String(list[0].id) : '');
       setEnrollOpen(true);
     } catch (e) {
       setErr(e.message);

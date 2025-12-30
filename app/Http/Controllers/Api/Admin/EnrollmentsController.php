@@ -36,6 +36,28 @@ class EnrollmentsController extends Controller
         return response()->json($query->paginate(25));
     }
 
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'course_id' => 'required|integer|exists:courses,id',
+            'user_id' => 'required|integer|exists:users,id',
+            'status' => 'nullable|in:assigned,in_progress,completed,archived',
+            'due_date' => 'nullable|date',
+        ]);
+
+        $en = Enrollment::firstOrCreate(
+            ['course_id' => $data['course_id'], 'user_id' => $data['user_id']],
+            [
+                'status' => $data['status'] ?? 'assigned',
+                'assigned_by' => optional($request->user())->id,
+                'assigned_at' => now(),
+                'due_date' => $data['due_date'] ?? null,
+            ]
+        );
+
+        return response()->json(['enrollment' => $en->loadMissing(['user','course'])], 201);
+    }
+
     public function update(Request $request, int $id)
     {
         $en = Enrollment::findOrFail($id);
@@ -46,5 +68,12 @@ class EnrollmentsController extends Controller
 
         $en->fill($data)->save();
         return response()->json(['enrollment' => $en]);
+    }
+
+    public function destroy(int $id)
+    {
+        $en = Enrollment::findOrFail($id);
+        $en->delete();
+        return response()->json(['message' => 'Enrollment deleted']);
     }
 }
