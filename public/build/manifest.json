@@ -1,0 +1,151 @@
+{
+  "_DailyMotion-DzcWDHSe.js": {
+    "file": "assets/DailyMotion-DzcWDHSe.js",
+    "name": "DailyMotion",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "_Facebook-CkmwV8Aq.js": {
+    "file": "assets/Facebook-CkmwV8Aq.js",
+    "name": "Facebook",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "_FilePlayer-ChacR5Bk.js": {
+    "file": "assets/FilePlayer-ChacR5Bk.js",
+    "name": "FilePlayer",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "_Kaltura-CCQV4AUS.js": {
+    "file": "assets/Kaltura-CCQV4AUS.js",
+    "name": "Kaltura",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "_Mixcloud-4139C_uQ.js": {
+    "file": "assets/Mixcloud-4139C_uQ.js",
+    "name": "Mixcloud",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "_Mux-BsyvdnHq.js": {
+    "file": "assets/Mux-BsyvdnHq.js",
+    "name": "Mux",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "_Preview-fF0CcFCV.js": {
+    "file": "assets/Preview-fF0CcFCV.js",
+    "name": "Preview",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "_SoundCloud-C-5tsFZS.js": {
+    "file": "assets/SoundCloud-C-5tsFZS.js",
+    "name": "SoundCloud",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "_Streamable-LnL0CUPk.js": {
+    "file": "assets/Streamable-LnL0CUPk.js",
+    "name": "Streamable",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "_Twitch-Ja4HYqJq.js": {
+    "file": "assets/Twitch-Ja4HYqJq.js",
+    "name": "Twitch",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "_Vidyard-CqMFjUig.js": {
+    "file": "assets/Vidyard-CqMFjUig.js",
+    "name": "Vidyard",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "_Vimeo-B-NE-6MJ.js": {
+    "file": "assets/Vimeo-B-NE-6MJ.js",
+    "name": "Vimeo",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "_Wistia-Bv__SL08.js": {
+    "file": "assets/Wistia-Bv__SL08.js",
+    "name": "Wistia",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "_YouTube-Ff1js44q.js": {
+    "file": "assets/YouTube-Ff1js44q.js",
+    "name": "YouTube",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "node_modules/pdfjs-dist/build/pdf.worker.min.mjs": {
+    "file": "assets/pdf.worker.min-yatZIOMy.mjs",
+    "src": "node_modules/pdfjs-dist/build/pdf.worker.min.mjs"
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-DD0FUyd8.css",
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/js/app.jsx": {
+    "file": "assets/app-DXzB0GT7.js",
+    "name": "app",
+    "src": "resources/js/app.jsx",
+    "isEntry": true,
+    "dynamicImports": [
+      "_YouTube-Ff1js44q.js",
+      "_SoundCloud-C-5tsFZS.js",
+      "_Vimeo-B-NE-6MJ.js",
+      "_Mux-BsyvdnHq.js",
+      "_Facebook-CkmwV8Aq.js",
+      "_Streamable-LnL0CUPk.js",
+      "_Wistia-Bv__SL08.js",
+      "_Twitch-Ja4HYqJq.js",
+      "_DailyMotion-DzcWDHSe.js",
+      "_Mixcloud-4139C_uQ.js",
+      "_Vidyard-CqMFjUig.js",
+      "_Kaltura-CCQV4AUS.js",
+      "_FilePlayer-ChacR5Bk.js",
+      "_Preview-fF0CcFCV.js"
+    ],
+    "css": [
+      "assets/app-DD0FUyd8.css"
+    ],
+    "assets": [
+      "assets/pdf.worker.min-yatZIOMy.mjs"
+    ]
+  }
+}

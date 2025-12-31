@@ -19,7 +19,7 @@ export default function CourseBuilder({ courseId }) {
   const [course, setCourse] = useState(null);
   const [err, setErr] = useState('');
   const [loading, setLoading] = useState(true);
-  const [uploadDraft, setUploadDraft] = useState({}); 
+  const [uploadDraft, setUploadDraft] = useState({});
 
   const [newModuleTitle, setNewModuleTitle] = useState('');
   const [lessonDraft, setLessonDraft] = useState({ moduleId: null, title: '', type: 'video', required: true, min_watch_percent: 90, must_view_all_slides: true });
@@ -35,16 +35,16 @@ export default function CourseBuilder({ courseId }) {
 
     const moduleIds = nextModuleOrderIds || currentModules
       .slice()
-      .sort((a,b)=>a.sort_order-b.sort_order)
-      .map(m=>m.id);
+      .sort((a, b) => a.sort_order - b.sort_order)
+      .map(m => m.id);
 
     return {
       modules: moduleIds.map((mid) => {
         const mod = byId.get(mid);
         const currentLessonIds = (mod?.lessons || [])
           .slice()
-          .sort((a,b)=>a.sort_order-b.sort_order)
-          .map(l=>l.id);
+          .sort((a, b) => a.sort_order - b.sort_order)
+          .map(l => l.id);
         const lessonIds = nextLessonOrderByModule[mid] || currentLessonIds;
         return {
           id: mid,
@@ -97,7 +97,7 @@ export default function CourseBuilder({ courseId }) {
   }
 
   async function moveModule(moduleId, dir) {
-    const ids = [...course.modules].sort((a,b)=>a.sort_order-b.sort_order).map(m=>m.id);
+    const ids = [...course.modules].sort((a, b) => a.sort_order - b.sort_order).map(m => m.id);
     const idx = ids.indexOf(moduleId);
     const j = idx + dir;
     if (idx < 0 || j < 0 || j >= ids.length) return;
@@ -109,7 +109,7 @@ export default function CourseBuilder({ courseId }) {
   async function reorderModulesByDrag(fromModuleId, toModuleId) {
     if (!course) return;
     if (!fromModuleId || !toModuleId || fromModuleId === toModuleId) return;
-    const ids = [...course.modules].sort((a,b)=>a.sort_order-b.sort_order).map(m=>m.id);
+    const ids = [...course.modules].sort((a, b) => a.sort_order - b.sort_order).map(m => m.id);
     const from = ids.indexOf(fromModuleId);
     const to = ids.indexOf(toModuleId);
     if (from < 0 || to < 0) return;
@@ -121,9 +121,9 @@ export default function CourseBuilder({ courseId }) {
   async function reorderLessonsByDrag(moduleId, fromLessonId, toLessonId) {
     if (!course) return;
     if (!moduleId || !fromLessonId || !toLessonId || fromLessonId === toLessonId) return;
-    const mod = course.modules.find(m=>m.id===moduleId);
+    const mod = course.modules.find(m => m.id === moduleId);
     if (!mod) return;
-    const ids = [...(mod.lessons||[])].sort((a,b)=>a.sort_order-b.sort_order).map(l=>l.id);
+    const ids = [...(mod.lessons || [])].sort((a, b) => a.sort_order - b.sort_order).map(l => l.id);
     const from = ids.indexOf(fromLessonId);
     const to = ids.indexOf(toLessonId);
     if (from < 0 || to < 0) return;
@@ -133,8 +133,8 @@ export default function CourseBuilder({ courseId }) {
   }
 
   async function moveLesson(moduleId, lessonId, dir) {
-    const mod = course.modules.find(m=>m.id===moduleId);
-    const ids = [...mod.lessons].sort((a,b)=>a.sort_order-b.sort_order).map(l=>l.id);
+    const mod = course.modules.find(m => m.id === moduleId);
+    const ids = [...mod.lessons].sort((a, b) => a.sort_order - b.sort_order).map(l => l.id);
     const idx = ids.indexOf(lessonId);
     const j = idx + dir;
     if (idx < 0 || j < 0 || j >= ids.length) return;
@@ -148,27 +148,27 @@ export default function CourseBuilder({ courseId }) {
     fd.append('asset_type', assetType);
     fd.append('file', file);
     await apiUpload(`/api/admin/lessons/${lessonId}/assets/upload`, fd);
+    setUploadDraft(prev => ({ ...prev, [lessonId]: { ...(prev[lessonId] || {}), file: null } }));
     await load();
   }
-
   async function deleteModule(moduleId) {
     if (!confirm('Delete this module (and its lessons)?')) return;
     await apiDelete(`/api/admin/modules/${moduleId}`);
     await load();
   }
-  
+
   async function deleteLesson(lessonId) {
     if (!confirm('Delete this lesson (and its assets)?')) return;
     await apiDelete(`/api/admin/lessons/${lessonId}`);
     await load();
   }
-  
+
   async function deleteAsset(assetId) {
     if (!confirm('Delete this asset?')) return;
     await apiDelete(`/api/admin/assets/${assetId}`);
     await load();
   }
-  
+
 
   if (loading) return <AppLayout title="Course Builder" nav={nav}><div className="text-slate-600">Loading…</div></AppLayout>;
   if (err) return <AppLayout title="Course Builder" nav={nav}><div className="text-red-600">{err}</div></AppLayout>;
@@ -216,6 +216,7 @@ export default function CourseBuilder({ courseId }) {
                       <div className="text-xs text-slate-500">Sort: {m.sort_order}</div>
                     </div>
                     <div className="flex gap-2">
+                      <button onClick={() => deleteModule(m.id)} className="rounded-xl border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 hover:bg-red-50">Delete</button>
                       <button onClick={() => moveModule(m.id, -1)} className="rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold">Up</button>
                       <button onClick={() => moveModule(m.id, 1)} className="rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold">Down</button>
                       <button onClick={() => setLessonDraft({ ...lessonDraft, moduleId: m.id })} className="rounded-xl bg-blue-600 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-700">Add Lesson</button>
@@ -235,7 +236,7 @@ export default function CourseBuilder({ courseId }) {
                         onDrop={(e) => {
                           e.preventDefault();
                           let from = dragLesson;
-                          try { from = from || JSON.parse(e.dataTransfer.getData('text/plain')); } catch {}
+                          try { from = from || JSON.parse(e.dataTransfer.getData('text/plain')); } catch { }
                           if (!from || Number(from.moduleId) !== Number(m.id)) return;
                           reorderLessonsByDrag(m.id, Number(from.lessonId), l.id);
                           setDragLesson(null);
@@ -251,6 +252,7 @@ export default function CourseBuilder({ courseId }) {
                             <div className="mt-0.5 text-xs text-slate-500">Type: {String(l.type).toUpperCase()} • Required: {l.required ? 'Yes' : 'No'} • Sort: {l.sort_order}</div>
                           </div>
                           <div className="flex gap-2">
+                            <button onClick={() => deleteLesson(l.id)} className="rounded-xl border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 hover:bg-red-50">Delete</button>
                             <button onClick={() => moveLesson(m.id, l.id, -1)} className="rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold">Up</button>
                             <button onClick={() => moveLesson(m.id, l.id, 1)} className="rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold">Down</button>
                           </div>
@@ -260,21 +262,42 @@ export default function CourseBuilder({ courseId }) {
                           <div>
                             <div className="text-xs font-semibold text-slate-600">Attach Asset</div>
                             <div className="mt-2 flex items-center gap-2">
-                              <select id={`type-${l.id}`} defaultValue={l.type === 'video' ? 'video' : (l.type === 'pdf' ? 'pdf' : (l.type === 'ppt' ? 'ppt' : 'other'))} className="rounded-xl border border-slate-200 px-3 py-2 text-sm">
+                              <select value={uploadDraft[l.id]?.type || 'other'} onChange={(e) =>
+                                setUploadDraft(prev => ({
+                                  ...prev,
+                                  [l.id]: { ...(prev[l.id] || {}), type: e.target.value },
+                                }))
+                              }
+                                className="rounded-xl border border-slate-200 px-3 py-2 text-sm"
+                              >
                                 <option value="video">Video</option>
                                 <option value="pdf">PDF</option>
                                 <option value="ppt">PPT</option>
                                 <option value="image">Image</option>
                                 <option value="other">Other</option>
                               </select>
-                              <input type="file" className="text-sm" onChange={(e) => {
-                                const file = e.target.files?.[0];
-                                if (!file) return;
-                                const sel = document.getElementById(`type-${l.id}`);
-                                const assetType = sel?.value || 'other';
-                                uploadAsset(l.id, assetType, file);
-                              }} />
+
+                              <input
+                                type="file"
+                                className="text-sm"
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0] || null;
+                                  setUploadDraft(prev => ({
+                                    ...prev,
+                                    [l.id]: { ...(prev[l.id] || {}), file },
+                                  }));
+                                }}
+                              />
+                              <button
+                                disabled={!uploadDraft[l.id]?.file}
+                                onClick={() => uploadAsset(l.id, uploadDraft[l.id]?.type || 'other', uploadDraft[l.id]?.file)}
+                                className="rounded-xl bg-blue-600 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-60"
+                              >
+                                Upload
+                              </button>
+
                             </div>
+
                             <div className="mt-2 text-xs text-slate-500">Upload rules are controlled via Admin Settings (max size + allowed types).</div>
                           </div>
 
@@ -307,7 +330,7 @@ export default function CourseBuilder({ courseId }) {
           <Card>
             <div className="text-sm font-extrabold text-slate-900">Create Module</div>
             <div className="mt-1 text-xs text-slate-500">Modules group lessons in the learner outline.</div>
-            <input value={newModuleTitle} onChange={(e)=>setNewModuleTitle(e.target.value)} placeholder="e.g. Site Safety" className="mt-3 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm" />
+            <input value={newModuleTitle} onChange={(e) => setNewModuleTitle(e.target.value)} placeholder="e.g. Site Safety" className="mt-3 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm" />
             <button onClick={addModule} className="mt-3 w-full rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">Add Module</button>
           </Card>
 
@@ -318,19 +341,19 @@ export default function CourseBuilder({ courseId }) {
             <div className="mt-3 space-y-3">
               <div>
                 <div className="text-xs font-semibold text-slate-600">Module</div>
-                <select value={lessonDraft.moduleId || ''} onChange={(e)=>setLessonDraft({...lessonDraft, moduleId: Number(e.target.value) || null})} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm">
+                <select value={lessonDraft.moduleId || ''} onChange={(e) => setLessonDraft({ ...lessonDraft, moduleId: Number(e.target.value) || null })} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm">
                   <option value="">Select module…</option>
-                  {(course.modules || []).map((m)=> <option key={m.id} value={m.id}>{titleOf(m, `Module ${m.sort_order}`)}</option>)}
+                  {(course.modules || []).map((m) => <option key={m.id} value={m.id}>{titleOf(m, `Module ${m.sort_order}`)}</option>)}
                 </select>
               </div>
               <div>
                 <div className="text-xs font-semibold text-slate-600">Title</div>
-                <input value={lessonDraft.title} onChange={(e)=>setLessonDraft({...lessonDraft, title:e.target.value})} placeholder="e.g. PPE Requirements" className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm" />
+                <input value={lessonDraft.title} onChange={(e) => setLessonDraft({ ...lessonDraft, title: e.target.value })} placeholder="e.g. PPE Requirements" className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm" />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <div className="text-xs font-semibold text-slate-600">Type</div>
-                  <select value={lessonDraft.type} onChange={(e)=>setLessonDraft({...lessonDraft, type:e.target.value})} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm">
+                  <select value={lessonDraft.type} onChange={(e) => setLessonDraft({ ...lessonDraft, type: e.target.value })} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm">
                     <option value="video">Video</option>
                     <option value="pdf">PDF</option>
                     <option value="ppt">PPT</option>
@@ -339,7 +362,7 @@ export default function CourseBuilder({ courseId }) {
                 </div>
                 <div>
                   <div className="text-xs font-semibold text-slate-600">Required</div>
-                  <select value={lessonDraft.required ? '1' : '0'} onChange={(e)=>setLessonDraft({...lessonDraft, required: e.target.value==='1'})} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm">
+                  <select value={lessonDraft.required ? '1' : '0'} onChange={(e) => setLessonDraft({ ...lessonDraft, required: e.target.value === '1' })} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm">
                     <option value="1">Yes</option>
                     <option value="0">No</option>
                   </select>
@@ -349,14 +372,14 @@ export default function CourseBuilder({ courseId }) {
               {lessonDraft.type === 'video' ? (
                 <div>
                   <div className="text-xs font-semibold text-slate-600">Minimum Watch %</div>
-                  <input type="number" min={1} max={100} value={lessonDraft.min_watch_percent} onChange={(e)=>setLessonDraft({...lessonDraft, min_watch_percent: e.target.value})} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm" />
+                  <input type="number" min={1} max={100} value={lessonDraft.min_watch_percent} onChange={(e) => setLessonDraft({ ...lessonDraft, min_watch_percent: e.target.value })} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm" />
                 </div>
               ) : null}
 
               {(lessonDraft.type === 'pdf' || lessonDraft.type === 'ppt') ? (
                 <div>
                   <div className="text-xs font-semibold text-slate-600">Must View All Pages</div>
-                  <select value={lessonDraft.must_view_all_slides ? '1' : '0'} onChange={(e)=>setLessonDraft({...lessonDraft, must_view_all_slides: e.target.value==='1'})} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm">
+                  <select value={lessonDraft.must_view_all_slides ? '1' : '0'} onChange={(e) => setLessonDraft({ ...lessonDraft, must_view_all_slides: e.target.value === '1' })} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm">
                     <option value="1">Yes</option>
                     <option value="0">No</option>
                   </select>

@@ -5,7 +5,7 @@ import Card from '@/Components/Card';
 import Toast from '@/Components/Toast';
 import EmptyState from '@/Components/EmptyState';
 import ProgressBar from '@/Components/ProgressBar';
-import { apiGet, apiPost } from '@/lib/apiClient';
+import { apiGet, apiPost, apiDelete } from '@/lib/apiClient';
 
 // API helpers are centralized in @/lib/apiClient (handles 401 + HTML responses safely)
 
@@ -91,6 +91,17 @@ export default function CoursesIndex() {
       setErr(e.message);
     } finally {
       setCreating(false);
+    }
+  }
+
+  async function deleteCourse(course) {
+    if (!confirm(`Delete course "${course?.translations?.[0]?.title || course.code}"?`)) return;
+    setErr('');
+    try {
+      await apiDelete(`/api/admin/courses/${course.id}`);
+      await load();
+    } catch (e) {
+      setErr(e.message);
     }
   }
 
@@ -221,6 +232,10 @@ export default function CoursesIndex() {
                       <div className="flex items-center gap-2">
                         <button onClick={() => openEnrollModal(c)} className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-white">Enroll</button>
                         <Link href={`/admin/courses/${c.id}/builder`} className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">Open Builder</Link>
+                        <button onClick={() => deleteCourse(c)} className="rounded-xl border border-red-200 px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-50">
+  Delete
+</button>
+
                       </div>
                     </div>
                   </div>
