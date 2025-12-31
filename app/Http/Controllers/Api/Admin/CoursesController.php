@@ -18,11 +18,19 @@ class CoursesController extends Controller
         );
     }
 
-    public function show(\App\Models\Course $course)
+    public function show(Course $course)
     {
-        $course->load(['translations']);
+        // keep it consistent with your builder graph
+        $course->load([
+            'translations',
+            'modules.translations',
+            'modules.lessons.translations',
+            'modules.lessons.assets',
+        ]);
+
         return response()->json(['course' => $course]);
     }
+
 
     public function showFull(int $id)
     {
@@ -83,12 +91,26 @@ class CoursesController extends Controller
         return response()->json(['course' => $course]);
     }
 
-    public function destroy(\App\Models\Course $course)
+    public function destroy(Course $course)
     {
-        // If your DB has cascading foreign keys, this will clean up related
-        // modules/lessons/assets/translations automatically.
-        $course->delete();
-        return response()->json(['message' => 'Course deleted']);
+        // Safe delete (remove children first to avoid FK issues)
+        DB::transaction(function () use ($course) {
+            $course->load(['modules.lessons.assets']);
+
+            foreach ($course->modules as $m) {
+                foreach ($m->lessons as $l) {
+                    foreach ($l->assets as $a) {
+                        $a->delete();
+                    }
+                    $l->delete();
+                }
+                $m->delete();
+            }
+
+            $course->delete();
+        });
+
+        return response()->json(['ok' => true]);
     }
 
     public function addModule(Request $request, int $id)

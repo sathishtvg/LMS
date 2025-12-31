@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import AppLayout from '@/Layouts/AppLayout';
 import Card from '@/Components/Card';
 
-import { apiGet, apiPost, apiUpload } from '@/lib/apiClient';
+import { apiGet, apiPost, apiUpload, apiDelete } from '@/lib/apiClient';
 
 function titleOf(obj, fallback) {
   return obj?.translations?.[0]?.title || fallback;
@@ -19,6 +19,7 @@ export default function CourseBuilder({ courseId }) {
   const [course, setCourse] = useState(null);
   const [err, setErr] = useState('');
   const [loading, setLoading] = useState(true);
+  const [uploadDraft, setUploadDraft] = useState({}); 
 
   const [newModuleTitle, setNewModuleTitle] = useState('');
   const [lessonDraft, setLessonDraft] = useState({ moduleId: null, title: '', type: 'video', required: true, min_watch_percent: 90, must_view_all_slides: true });
@@ -149,6 +150,25 @@ export default function CourseBuilder({ courseId }) {
     await apiUpload(`/api/admin/lessons/${lessonId}/assets/upload`, fd);
     await load();
   }
+
+  async function deleteModule(moduleId) {
+    if (!confirm('Delete this module (and its lessons)?')) return;
+    await apiDelete(`/api/admin/modules/${moduleId}`);
+    await load();
+  }
+  
+  async function deleteLesson(lessonId) {
+    if (!confirm('Delete this lesson (and its assets)?')) return;
+    await apiDelete(`/api/admin/lessons/${lessonId}`);
+    await load();
+  }
+  
+  async function deleteAsset(assetId) {
+    if (!confirm('Delete this asset?')) return;
+    await apiDelete(`/api/admin/assets/${assetId}`);
+    await load();
+  }
+  
 
   if (loading) return <AppLayout title="Course Builder" nav={nav}><div className="text-slate-600">Loading…</div></AppLayout>;
   if (err) return <AppLayout title="Course Builder" nav={nav}><div className="text-red-600">{err}</div></AppLayout>;

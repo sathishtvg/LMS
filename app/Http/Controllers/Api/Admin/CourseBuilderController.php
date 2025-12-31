@@ -84,9 +84,9 @@ class CourseBuilderController extends Controller
             'module_id' => $module->id,
             'type' => $data['type'],
             'sort_order' => $nextOrder,
-            'required' => (bool)($data['required'] ?? true),
+            'required' => (bool) ($data['required'] ?? true),
             'min_watch_percent' => $data['min_watch_percent'] ?? null,
-            'must_view_all_slides' => (bool)($data['must_view_all_slides'] ?? false),
+            'must_view_all_slides' => (bool) ($data['must_view_all_slides'] ?? false),
         ]);
 
         if (method_exists($lesson, 'translations')) {
@@ -161,8 +161,9 @@ class CourseBuilderController extends Controller
 
     public function uploadAsset(Request $request, Lesson $lesson)
     {
-        $request->validate([
-            'file' => 'required|file|max:512000', // 500MB example
+        $data = $request->validate([
+            'asset_type' => 'required|in:video,pdf,ppt,image,other',
+            'file' => 'required|file|max:512000', // KB (500MB example)
         ]);
 
         $file = $request->file('file');
@@ -170,19 +171,22 @@ class CourseBuilderController extends Controller
 
         $asset = Asset::create([
             'lesson_id' => $lesson->id,
-            'asset_type' => $file->getClientOriginalExtension(),
-            'storage_driver' => 'local',
+            'asset_type' => $data['asset_type'], // IMPORTANT: use selected type, not extension
+            'storage_driver' => 'public',
             'path_or_url' => $path,
             'is_external' => false,
-            'meta_json' => json_encode([
+            // Asset model casts meta_json as array, so DO NOT json_encode
+            'meta_json' => [
                 'original_name' => $file->getClientOriginalName(),
                 'size' => $file->getSize(),
                 'mime' => $file->getMimeType(),
-            ]),
+                'extension' => $file->getClientOriginalExtension(),
+            ],
         ]);
 
         return response()->json(['asset' => $asset]);
     }
+
 
     public function attachAsset(Request $request, Lesson $lesson)
     {
